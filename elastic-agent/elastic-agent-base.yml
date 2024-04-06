@@ -1,9 +1,15 @@
 version: '3.7'
 
+# It is better to install Elastic Agent to your application compose. This base is based on fleet-compose.yml and only
+# shows environment values and settings that must be set for agent to work
+
+# https://www.elastic.co/guide/en/fleet/current/elastic-agent-container.html
+# https://www.elastic.co/guide/en/fleet/current/agent-environment-variables.html#env-enroll-agent
+
 services:
   elastic-agent:
     build:
-      context: extensions/fleet/
+      context: .
       args:
         ELASTIC_VERSION: ${ELASTIC_VERSION}
     # Run as 'root' instead of 'elastic-agent' (uid 1000) to allow reading
@@ -23,9 +29,10 @@ services:
       FLEET_ENROLL: '1'
       FLEET_INSECURE: '1'
       FLEET_SERVER_HOST: 0.0.0.0
-      FLEET_ENROLLMENT_TOKEN: WVI5bXM0NEI5c3pTd1dXWUM3ckc6UzF5YlR4WVBSYW1CX1k0MVdULWY5QQ==
+      FLEET_ENROLLMENT_TOKEN: <TOKEN_HERE>
       FLEET_URL: http://fleet-server:8220
     ports:
+      # Specify ports set in Kibana config UI here. 8221 is example
       - "8221:8221"
     hostname: elastic-agent
     # Elastic Agent does not retry failed connections to Kibana upon the initial enrollment phase.
