@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+  elastic-agent:
+    build:
+      context: extensions/fleet/
+      args:
+        ELASTIC_VERSION: ${ELASTIC_VERSION}
+    # Run as 'root' instead of 'elastic-agent' (uid 1000) to allow reading
+    # 'docker.sock' and the host's filesystem.
+    user: root
+    volumes:
+      - elastic-agent:/usr/share/elastic-agent/state:Z
+      - type: bind
+        source: /var/lib/docker/containers
+        target: /var/lib/docker/containers
+        read_only: true
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        read_only: true
+    environment:
+      FLEET_ENROLL: '1'
+      FLEET_INSECURE: '1'
+      FLEET_SERVER_HOST: 0.0.0.0
+      FLEET_ENROLLMENT_TOKEN: WVI5bXM0NEI5c3pTd1dXWUM3ckc6UzF5YlR4WVBSYW1CX1k0MVdULWY5QQ==
+      FLEET_URL: http://fleet-server:8220
+    ports:
+      - "8221:8221"
+    hostname: elastic-agent
+    # Elastic Agent does not retry failed connections to Kibana upon the initial enrollment phase.
+    restart: on-failure
+    networks:
+      - elk
+    depends_on:
+      - elasticsearch
+      - kibana
+
+volumes:
+  elastic-agent:

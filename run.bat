@@ -1,0 +1,1 @@
+docker compose -f docker-compose.yml -f extensions/fleet/fleet-compose.yml -f agents/elastic-agent.yml up
